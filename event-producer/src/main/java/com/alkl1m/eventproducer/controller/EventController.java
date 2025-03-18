@@ -1,6 +1,7 @@
 package com.alkl1m.eventproducer.controller;
 
 import com.alkl1m.eventproducer.model.EventRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import net.datafaker.Faker;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +18,20 @@ import java.util.Map;
 @RequestMapping("/events")
 public class EventController {
 
-    private final KafkaTemplate<String, EventRequest> kafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
     private final Faker faker = new Faker();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @PostMapping
     public ResponseEntity<String> createEvent() {
-        EventRequest event = generateFakeEvent();
-        kafkaTemplate.send("raw-events", event);
-        return ResponseEntity.ok("Event created with generated data");
+        try {
+            EventRequest event = generateFakeEvent();
+            String eventAsString = objectMapper.writeValueAsString(event);
+            kafkaTemplate.send("raw-events", eventAsString);
+            return ResponseEntity.ok("Event created with generated data");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error creating event: " + e.getMessage());
+        }
     }
 
     private EventRequest generateFakeEvent() {

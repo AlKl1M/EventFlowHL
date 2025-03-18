@@ -2,12 +2,9 @@ spring:
   kafka:
     bootstrap-servers: kafka-0:9092,kafka-1:9092,kafka-2:9092
     producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-    consumer:
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: "*"
+      acks: all
+      linger-ms: 20
+      batch-size: 16384
+      compression-type: snappy
 server:
   port: 8090
