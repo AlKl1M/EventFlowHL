@@ -1,0 +1,23 @@
+spring:
+  kafka:
+    bootstrap-servers: kafka-0:9092,kafka-1:9092,kafka-2:9092
+    consumer:
+      group-id: event-consumer-group
+      auto-offset-reset: earliest
+      concurrency: 1
+      max-poll-records: 500
+  datasource:
+    url: jdbc:postgresql://postgres:5432/eventflow
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+logging:
+  level:
+    org:
+      springframework:
+        jdbc:
+          core:
+            JdbcTemplate: DEBUG

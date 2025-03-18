@@ -1,4 +1,16 @@
 services:
+
+  postgres:
+    image: postgres:latest
+    ports: [ "5432:5432" ]
+    environment:
+      POSTGRES_DB: eventflow
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./postgres-init/init.sql:/docker-entrypoint-initdb.d/init.sql
+
   kafka-0:
     image: docker.io/bitnami/kafka:latest
     container_name: kafka-0
@@ -103,12 +115,28 @@ services:
     ports:
       - "8090:8090"
 
+  event-consumer:
+    build:
+      context: ./event-consumer
+      dockerfile: Dockerfile
+    container_name: event-consumer
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP-SERVERS=kafka-0:9092,kafka-1:9092,kafka-2:9092
+    depends_on:
+      - kafka-0
+      - kafka-1
+      - kafka-2
+    ports:
+      - "8091:8091"
+
 volumes:
   kafka_0_data:
     driver: local
   kafka_1_data:
     driver: local
   kafka_2_data:
+    driver: local
+  postgres-data:
     driver: local
 
 networks:
