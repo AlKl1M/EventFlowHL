@@ -21,3 +21,15 @@ logging:
         jdbc:
           core:
             JdbcTemplate: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,metrics
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+server:
+  port: 8091

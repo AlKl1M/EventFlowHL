@@ -8,3 +8,13 @@ spring:
       compression-type: snappy
 server:
   port: 8090
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,metrics
+  metrics:
+    export:
+      prometheus:
+        enabled: true

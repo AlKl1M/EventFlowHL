@@ -129,6 +129,32 @@ services:
     ports:
       - "8091:8091"
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    depends_on:
+      - event-producer
+      - event-consumer
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+
 volumes:
   kafka_0_data:
     driver: local
@@ -137,6 +163,8 @@ volumes:
   kafka_2_data:
     driver: local
   postgres-data:
+    driver: local
+  grafana-storage:
     driver: local
 
 networks:
